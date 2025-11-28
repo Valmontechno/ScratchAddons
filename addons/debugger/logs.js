@@ -126,7 +126,7 @@ export default async function createLogsTab({ debug, addon, console, msg }) {
 
   const pauseOnErrorButton = debug.createIconCheckbox({
     text: msg("pause-on-error"),
-    checked: debug.pauseOnError.enabled
+    checked: debug.pauseOnError.enabled,
   });
   pauseOnErrorButton.checkbox.addEventListener("change", () => {
     debug.pauseOnError.enabled = pauseOnErrorButton.checkbox.checked;

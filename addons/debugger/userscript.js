@@ -23,8 +23,8 @@ export default async function ({ addon, console, msg }) {
     set enabled(value) {
       this._enabled = value;
       localStorage.setItem("sa-debugger-pauseOnError", value);
-    }
-  }
+    },
+  };
 
   let logsTab;
   let timingTab;
@@ -85,10 +85,7 @@ export default async function ({ addon, console, msg }) {
     },
   });
   addon.tab.addBlock("\u200B\u200Bassert\u200B\u200B %b else %s", {
-    args: [
-      {name: "assertion"},
-      {name: "message", default: "Assertion failed"}
-    ],
+    args: [{ name: "assertion" }, { name: "message", default: "Assertion failed" }],
     displayName: msg("block-assert"),
     callback: ({ assertion, message }, thread) => {
       if (!assertion) {
@@ -240,11 +237,11 @@ export default async function ({ addon, console, msg }) {
     return {
       element: button,
       image: imageElement,
-      text: textElement
+      text: textElement,
     };
   };
 
-  const createIconCheckbox = ({ text, icon, description, checked=false }) => {
+  const createIconCheckbox = ({ text, icon, description, checked = false }) => {
     const button = createIconButton({ text, icon, description });
 
     // Add checkbox to the left side of the button
@@ -273,9 +270,9 @@ export default async function ({ addon, console, msg }) {
       element: button.element,
       image: button.image,
       text: button.text,
-      checkbox
+      checkbox,
     };
-  }
+  };
 
   const createHeaderTab = ({ text, icon }) => {
     const tab = document.createElement("li");
@@ -598,7 +595,7 @@ export default async function ({ addon, console, msg }) {
       getTargetInfoById,
       createBlockLink,
       createBlockPreview,
-      pauseOnError
+      pauseOnError,
     },
     addon,
     msg,
