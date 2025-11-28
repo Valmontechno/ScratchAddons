@@ -15,6 +15,17 @@ const removeAllChildren = (element) => {
 export default async function ({ addon, console, msg }) {
   setup(addon);
 
+  const pauseOnError = {
+    _enabled: localStorage.getItem("sa-debugger-pauseOnError") === "true",
+    get enabled() {
+      return this._enabled;
+    },
+    set enabled(value) {
+      this._enabled = value;
+      localStorage.setItem("sa-debugger-pauseOnError", value);
+    }
+  }
+
   let logsTab;
   let timingTab;
   const messagesLoggedBeforeLogsTabLoaded = [];
@@ -68,6 +79,24 @@ export default async function ({ addon, console, msg }) {
     displayName: msg("block-error"),
     callback: ({ content }, thread) => {
       logMessage(content, thread, "error");
+      if (pauseOnError.enabled) {
+        pause();
+      }
+    },
+  });
+  addon.tab.addBlock("\u200B\u200Bassert\u200B\u200B %b else %s", {
+    args: [
+      {name: "assertion"},
+      {name: "message", default: "Assertion failed"}
+    ],
+    displayName: msg("block-assert"),
+    callback: ({ assertion, message }, thread) => {
+      if (!assertion) {
+        logMessage(message, thread, "assertion-error");
+        if (pauseOnError.enabled) {
+          pause();
+        }
+      }
     },
   });
   addon.tab.addBlock("\u200B\u200Bstart timer\u200B\u200B %s", {
@@ -133,14 +162,15 @@ export default async function ({ addon, console, msg }) {
     className: "sa-debugger-footer-buttons",
   });
 
+  let activeTab; // activeTab must be initialized before its first access
   let isInterfaceVisible = false;
   const setInterfaceVisible = (_isVisible) => {
     isInterfaceVisible = _isVisible;
     interfaceContainer.style.display = isInterfaceVisible ? "flex" : "";
     if (isInterfaceVisible) {
-      activeTab.show();
+      activeTab?.show();
     } else {
-      activeTab.hide();
+      activeTab?.hide();
     }
   };
 
@@ -210,9 +240,42 @@ export default async function ({ addon, console, msg }) {
     return {
       element: button,
       image: imageElement,
-      text: textElement,
+      text: textElement
     };
   };
+
+  const createIconCheckbox = ({ text, icon, description, checked=false }) => {
+    const button = createIconButton({ text, icon, description });
+
+    // Add checkbox to the left side of the button
+    const checkbox = Object.assign(document.createElement("input"), {
+      type: "checkbox",
+      checked,
+      className: "sa-debugger-checkbox",
+    });
+
+    // Add specific class
+    button.element.classList.add("sa-debugger-profiling-toggle");
+
+    // Prepend checkbox to button (left side)
+    button.element.insertBefore(checkbox, button.element.firstChild);
+
+    // Make entire button clickable to toggle checkbox
+    button.element.addEventListener("click", (e) => {
+      // Don't double-toggle if clicking directly on checkbox
+      if (e.target !== checkbox) {
+        checkbox.checked = !checkbox.checked;
+        checkbox.dispatchEvent(new Event("change"));
+      }
+    });
+
+    return {
+      element: button.element,
+      image: button.image,
+      text: button.text,
+      checkbox
+    };
+  }
 
   const createHeaderTab = ({ text, icon }) => {
     const tab = document.createElement("li");
@@ -526,7 +589,8 @@ export default async function ({ addon, console, msg }) {
 
   const api = {
     debug: {
-      createIconButton: createIconButton,
+      createIconButton,
+      createIconCheckbox,
       createHeaderTab,
       setHasUnreadMessage,
       addAfterStepCallback,
@@ -534,6 +598,7 @@ export default async function ({ addon, console, msg }) {
       getTargetInfoById,
       createBlockLink,
       createBlockPreview,
+      pauseOnError
     },
     addon,
     msg,
@@ -562,7 +627,6 @@ export default async function ({ addon, console, msg }) {
     }
   }
 
-  let activeTab;
   const setActiveTab = (tab) => {
     if (tab === activeTab) return;
     const selectedClass = "sa-debugger-tab-selected";

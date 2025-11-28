@@ -34,7 +34,7 @@ export default async function createLogsTab({ debug, addon, console, msg }) {
 
     const icon = document.createElement("div");
     icon.className = "sa-debugger-log-icon";
-    if (row.type === "warn" || row.type === "error") {
+    if (row.type === "warn" || row.type === "error" || row.type === "assertion-error") {
       icon.title = msg("icon-" + row.type);
     }
     root.appendChild(icon);
@@ -124,6 +124,14 @@ export default async function createLogsTab({ debug, addon, console, msg }) {
     clearLogs();
   });
 
+  const pauseOnErrorButton = debug.createIconCheckbox({
+    text: msg("pause-on-error"),
+    checked: debug.pauseOnError.enabled
+  });
+  pauseOnErrorButton.checkbox.addEventListener("change", () => {
+    debug.pauseOnError.enabled = pauseOnErrorButton.checkbox.checked;
+  });
+
   const areLogsEqual = (a, b) =>
     a.text === b.text &&
     a.type === b.type &&
@@ -182,7 +190,7 @@ export default async function createLogsTab({ debug, addon, console, msg }) {
   return {
     tab,
     content: logView.outerElement,
-    buttons: [exportButton, trashButton],
+    buttons: [exportButton, trashButton, pauseOnErrorButton],
     show,
     hide,
     addLog,

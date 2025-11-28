@@ -231,7 +231,7 @@
   color: hsl(38deg 100% 18%);
   background-color: hsl(38deg 100% 95%);
 }
-.sa-debugger-log[data-type="error"] {
+.sa-debugger-log[data-type*="error"] {
   border-color: hsl(20deg 100% 85%);
   color: hsl(20deg 100% 45%);
   background-color: hsl(20deg 100% 95%);
@@ -253,7 +253,7 @@
 [data-type="warn"] .sa-debugger-log-icon {
   background-image: url(./icons/warning.svg);
 }
-[data-type="error"] .sa-debugger-log-icon {
+[data-type*="error"] .sa-debugger-log-icon {
   background-image: url(./icons/error.svg);
 }
 .sa-debugger-threads .sa-debugger-log-icon {
@@ -460,7 +460,7 @@
 
 /* Shared checkbox styles for timing controls */
 
-.sa-timing-checkbox {
+.sa-debugger-checkbox {
   margin-right: 4px;
   cursor: pointer;
   transform: scale(1.2);
@@ -474,7 +474,7 @@
 }
 
 /* Make checkbox buttons same height as icon buttons */
-.sa-timing-profiling-toggle {
+.sa-debugger-profiling-toggle {
   height: 16px;
 }
 
@@ -482,12 +482,12 @@
   height: 16px;
 }
 
-.sa-timing-checkbox:checked {
+.sa-debugger-checkbox:checked {
   background-color: white;
   position: relative;
 }
 
-.sa-timing-checkbox:checked::after {
+.sa-debugger-checkbox:checked::after {
   content: "";
   position: absolute;
   left: 3.75px;

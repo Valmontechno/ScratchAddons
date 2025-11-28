@@ -19,34 +19,12 @@ export default async function createTimingTab({ debug, addon, console, msg }) {
   }
 
   function createLineByLineButton() {
-    const lineByLineButton = debug.createIconButton({
+    const lineByLineButton = debug.createIconCheckbox({
       text: msg("timing-profiling"),
     });
 
-    // Add checkbox to the left side of the button
-    const checkbox = Object.assign(document.createElement("input"), {
-      type: "checkbox",
-      className: "sa-timing-checkbox",
-    });
-
-    // Add specific class
-    lineByLineButton.element.classList.add("sa-timing-profiling-toggle");
-
-    // Prepend checkbox to button (left side)
-    lineByLineButton.element.insertBefore(checkbox, lineByLineButton.element.firstChild);
-
-    // Make entire button clickable to toggle checkbox
-    lineByLineButton.element.addEventListener("click", (e) => {
-      // Don't double-toggle if clicking directly on checkbox
-      if (e.target !== checkbox) {
-        checkbox.checked = !checkbox.checked;
-        checkbox.dispatchEvent(new Event("change"));
-      }
-    });
-
-    // Handle checkbox change
-    checkbox.addEventListener("change", () => {
-      config.showLineByLine = checkbox.checked;
+    lineByLineButton.checkbox.addEventListener("change", () => {
+      config.showLineByLine = lineByLineButton.checkbox.checked;
       if (config.showLineByLine && !config.isStepThreadPolluted) {
         polluteStepThread();
       } else if (!config.showLineByLine && config.isStepThreadPolluted) {
@@ -65,7 +43,7 @@ export default async function createTimingTab({ debug, addon, console, msg }) {
     // Add checkbox to the left side of the button
     const checkbox = Object.assign(document.createElement("input"), {
       type: "checkbox",
-      className: "sa-timing-checkbox",
+      className: "sa-debugger-checkbox",
     });
 
     // Create slider container (initially hidden)
